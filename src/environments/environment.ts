@@ -11,7 +11,7 @@ export const environment = {
     projectId: "planning-poker-scrum",
     storageBucket: "planning-poker-scrum.appspot.com",
     messagingSenderId: "876223931308",
-  }
+  },
 };
 
 /*

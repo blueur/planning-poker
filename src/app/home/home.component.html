@@ -1,0 +1,25 @@
+<div class="content">
+    <mat-card>
+        <form [formGroup]="createGroupForm" (ngSubmit)="onCreate(createGroupForm.value)">
+            <mat-card-title>New group</mat-card-title>
+            <mat-card-content>
+                <p>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Name</mat-label>
+                        <input matInput required formControlName="name">
+                    </mat-form-field>
+                </p>
+                <p>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Cards</mat-label>
+                        <input matInput required formControlName="cards">
+                    </mat-form-field>
+                </p>
+            </mat-card-content>
+            <mat-card-actions>
+                <button mat-raised-button color="primary" type="submit"
+                    [disabled]="createGroupForm.invalid">Create</button>
+            </mat-card-actions>
+        </form>
+    </mat-card>
+</div>

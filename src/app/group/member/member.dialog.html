@@ -1,0 +1,11 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit(form.value)">
+    <div mat-dialog-content>
+        <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input matInput required formControlName="name">
+        </mat-form-field>
+    </div>
+    <div mat-dialog-actions>
+        <button mat-button color="primary" type="submit" [disabled]="form.invalid">Join</button>
+    </div>
+</form>

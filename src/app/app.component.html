@@ -1,5 +1,4 @@
-<ul>
-  <li class="text" *ngFor="let item of items | async">
-    {{item.name}}
-  </li>
-</ul>
+<mat-toolbar color="primary">
+  <a routerLink="/" routerLinkActive="active">Planning Poker</a>
+</mat-toolbar>
+<router-outlet></router-outlet>
