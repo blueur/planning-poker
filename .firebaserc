@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "planning-poker-scrum": {
+      "hosting": {
+        "planning-poker": [
+          "planning-poker-scrum"
+        ]
+      }
+    }
+  }
+}
