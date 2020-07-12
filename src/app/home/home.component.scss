@@ -1,10 +1,16 @@
-.content {
+.home {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 .mat-card {
     margin: 4em;
+    width: -moz-available;
+    width: -webkit-fill-available;
+    width: stretch;
+}
+.mat-form-field {
+    width: 100%;
 }
 .mat-card-actions {
     display: flex;
