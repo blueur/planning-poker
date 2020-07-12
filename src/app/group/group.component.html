@@ -2,12 +2,22 @@
     <mat-toolbar>
         <span>{{group.name}} - {{member}}</span>
     </mat-toolbar>
+    <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+            <mat-panel-title>Invite members</mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-form-field>
+            <mat-label>Link</mat-label>
+            <input matInput [value]="link" readonly>
+            <button mat-icon-button matSuffix [cdkCopyToClipboard]="link">
+                <mat-icon>content_copy</mat-icon>
+            </button>
+        </mat-form-field>
+        <qrcode [qrdata]="link"></qrcode>
+    </mat-expansion-panel>
     <mat-card>
         <mat-card-content>
-            <p>
-                Share link: <a [href]="link">{{link}}</a>
-            </p>
-            <mat-form-field style="width: 100%;">
+            <mat-form-field>
                 <mat-label>Story</mat-label>
                 <textarea matInput (change)="onStoryChange($event.target.value)">{{group.story}}</textarea>
             </mat-form-field>
