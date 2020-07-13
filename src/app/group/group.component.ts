@@ -1,12 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Group } from '../models/group';
-import { map } from 'rxjs/operators';
 import { MemberDialog, MemberDialogData } from './member/member.dialog';
 
-import * as firebase from 'firebase/app';
+import { GroupService } from './group.service';
 
 @Component({
   selector: 'app-group',
@@ -16,56 +14,52 @@ import * as firebase from 'firebase/app';
 export class GroupComponent implements OnInit {
   displayedColumns: string[] = ['name', 'vote'];
   id: string;
-  document: AngularFirestoreDocument<unknown>;
   group: Group;
   member: string;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private firestore: AngularFirestore,
     private dialog: MatDialog,
+    private groupService: GroupService,
   ) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.id = params['id'];
-      this.document = this.firestore.collection('groups').doc(this.id);
-      this.document.get()
-        .subscribe(document => {
-          if (document.exists) {
-            const dialogRef = this.dialog.open(MemberDialog, {
-              disableClose: true,
-              data: new MemberDialogData(this.id),
-            });
-            dialogRef.afterClosed()
-              .subscribe(member => this.member = member);
-          } else {
-            this.router.navigate(['/']);
-          }
+      this.groupService.exist(this.id,
+        () => {
+          const dialogRef = this.dialog.open(MemberDialog, {
+            disableClose: true,
+            data: new MemberDialogData(this.id),
+          });
+          dialogRef.afterClosed()
+            .subscribe(member => this.member = member);
+        },
+        () => {
+          this.navigateToHome();
         });
     });
-    this.firestore.collection('groups').doc(this.id).valueChanges()
-      .pipe(map(data => Object.assign(new Group, data)))
+    this.groupService.onChange(this.id)
       .subscribe(group => {
         this.group = group
         if (this.member && !this.group.members.includes(this.member)) {
-          this.router.navigate(['/']);
+          this.navigateToHome();
         }
       });
     window.addEventListener('beforeunload', event => {
       if (this.member) {
         if (this.group.members.length <= 1) {
-          console.info('removing document ', this.group.name);
-          this.document.delete()
+          this.groupService.delete(this.id);
         } else {
-          console.info('removing member ', this.member);
-          this.document.update({
-            members: firebase.firestore.FieldValue.arrayRemove(this.member)
-          });
+          this.groupService.deleteMember(this.id, this.member);
         }
       }
     });
+  }
+
+  private navigateToHome(): Promise<boolean> {
+    return this.router.navigate(['/']);
   }
 
   get link(): string {
@@ -73,21 +67,15 @@ export class GroupComponent implements OnInit {
   }
 
   onStoryChange(value: string): void {
-    this.document.update({ story: value });
+    this.groupService.updateStory(this.id, value);
   }
 
   onVote(value: string): void {
-    const votes = {};
-    votes[this.member] = value;
-    this.document.set({
-      votes: votes
-    }, { merge: true });
+    this.groupService.updateVote(this.id, this.member, value);
   }
 
   onResetVote(): void {
-    this.document.update({
-      votes: {}
-    })
+    this.groupService.clearVotes(this.id);
   }
 
   get allVoted() {
@@ -108,5 +96,4 @@ export class GroupComponent implements OnInit {
       }
     });
   }
-
 }

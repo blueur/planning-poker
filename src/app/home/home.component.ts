@@ -1,13 +1,11 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, OnInit } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/firestore';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { from } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { Group } from '../models/group';
 import { MatChipInputEvent } from '@angular/material/chips';
+import { GroupService } from '../group/group.service';
 
 @Component({
   selector: 'app-home',
@@ -34,7 +32,7 @@ export class HomeComponent implements OnInit {
   constructor(
     private router: Router,
     private formBuilder: FormBuilder,
-    private firestore: AngularFirestore,
+    private groupService: GroupService,
   ) {
     this.createGroupForm = this.formBuilder.group({
       name: '',
@@ -70,10 +68,7 @@ export class HomeComponent implements OnInit {
     const group = new Group();
     group.name = data.name;
     group.cards = this.cards;
-    console.info('new group: ', group);
-    from(this.firestore.collection('groups')
-      .add(Object.assign({}, group)))
-      .pipe(map(document => document.id))
+    this.groupService.create(group)
       .subscribe(id => {
         this.router.navigate(['/groups', id]);
       });
