@@ -78,14 +78,14 @@ export class GroupComponent implements OnInit {
     this.groupService.clearVotes(this.id);
   }
 
-  get allVoted() {
-    return this.group.members.every(member => this.group.votes[member]);
+  get allVoted(): boolean {
+    return this.group.members.every(member => this.getVote(member));
   }
 
   get dataSource() {
     const allVoted = this.allVoted;
     return this.group.members.map(member => {
-      const vote = this.group.votes[member];
+      const vote = this.getVote();
       return {
         name: member,
         vote: allVoted ?
@@ -95,5 +95,9 @@ export class GroupComponent implements OnInit {
             'waiting')
       }
     });
+  }
+
+  getVote(member: string = this.member): string | undefined {
+    return this.group.votes[member];
   }
 }
