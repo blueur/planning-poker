@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, DocumentSnapshot, DocumentData } from '@angular/fire/firestore';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { Subscription, Observable, from } from 'rxjs';
 import { Group, Member } from '../models/group.model';
-import { map, tap, flatMap, filter } from 'rxjs/operators';
+import { map, flatMap, filter } from 'rxjs/operators';
 
-import * as firebase from 'firebase';
 import { isDefined } from '@angular/compiler/src/util';
 
 @Injectable({

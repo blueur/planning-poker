@@ -1,11 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Group, Member } from '../models/group.model';
 import { MemberDialog, MemberDialogData } from './member/member.dialog';
 
 import { GroupService } from './group.service';
-import { map, tap, flatMap, filter, isEmpty } from 'rxjs/operators';
+import { map, tap, flatMap, filter } from 'rxjs/operators';
+import { config } from 'rxjs';
 
 @Component({
   selector: 'app-group',
@@ -24,6 +26,7 @@ export class GroupComponent implements OnInit, OnDestroy {
     private router: Router,
     private dialog: MatDialog,
     private groupService: GroupService,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -107,6 +110,12 @@ export class GroupComponent implements OnInit, OnDestroy {
 
   get vote(): string {
     return this.member?.vote;
+  }
+
+  onCopyLink() {
+    this.snackBar.open('Copied to Clipboard', null, {
+      duration: 2048,
+    });
   }
 
   onStoryChange(value: string): void {

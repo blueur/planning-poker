@@ -9,7 +9,7 @@
         <mat-form-field>
             <mat-label>Link</mat-label>
             <input matInput [value]="link" readonly>
-            <button mat-icon-button matSuffix [cdkCopyToClipboard]="link">
+            <button mat-icon-button matSuffix [cdkCopyToClipboard]="link" (click)="onCopyLink()">
                 <mat-icon>content_copy</mat-icon>
             </button>
         </mat-form-field>

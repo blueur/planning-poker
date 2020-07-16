@@ -13,6 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ClipboardModule } from '@angular/cdk/clipboard';
@@ -51,6 +52,7 @@ import { HomeComponent } from './home/home.component';
     MatIconModule,
     MatInputModule,
     MatProgressBarModule,
+    MatSnackBarModule,
     MatTableModule,
     MatToolbarModule,
     ClipboardModule,
