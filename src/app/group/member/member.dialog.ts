@@ -1,9 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { AngularFirestore } from '@angular/fire/firestore';
-
-import * as firebase from 'firebase/app';
 
 @Component({
   selector: 'app-member',
@@ -18,10 +15,9 @@ export class MemberDialog implements OnInit {
     public dialogRef: MatDialogRef<MemberDialog>,
     @Inject(MAT_DIALOG_DATA) public data: MemberDialogData,
     private formBuilder: FormBuilder,
-    private firestore: AngularFirestore,
   ) {
     this.form = this.formBuilder.group({
-      name: '',
+      name: data.name,
     });
     this.groupId = data.groupId;
   }
@@ -31,12 +27,6 @@ export class MemberDialog implements OnInit {
 
   onSubmit(data: any) {
     const name: string = data.name;
-    this.firestore
-      .collection('groups')
-      .doc(this.groupId)
-      .update({
-        members: firebase.firestore.FieldValue.arrayUnion(name)
-      });
     this.dialogRef.close(name);
   }
 
@@ -45,5 +35,6 @@ export class MemberDialog implements OnInit {
 export class MemberDialogData {
   constructor(
     public groupId: string,
+    public name: string = '',
   ) { }
 }

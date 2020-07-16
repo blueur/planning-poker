@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { Group } from '../models/group';
+import { Group } from '../models/group.model';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { GroupService } from '../group/group.service';
 

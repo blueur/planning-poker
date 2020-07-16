@@ -1,12 +1,12 @@
 export class Group {
+    public id: string;
     public name: string = "";
     public cards: string[] = [];
     public story: string = "";
-    public members: string[] = [];
-    public votes: object = {};
 }
 
 export class Member {
+    public id: string;
     public name: string;
-    public vote: string = '';
+    public vote: string;
 }
