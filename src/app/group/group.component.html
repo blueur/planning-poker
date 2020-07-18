@@ -30,14 +30,35 @@
     </mat-card>
     <mat-card>
         <mat-card-content>
-            <mat-table [dataSource]="dataSource">
+            <mat-table [dataSource]="members">
                 <ng-container matColumnDef="name">
                     <mat-header-cell *matHeaderCellDef>Member</mat-header-cell>
-                    <mat-cell *matCellDef="let element">{{element.name}}</mat-cell>
+                    <mat-cell *matCellDef="let element">
+                        <ng-container *ngIf="element.name; else noName">{{element.name}}</ng-container>
+                        <ng-template #noName>
+                            <mat-icon>login</mat-icon>
+                        </ng-template>
+                    </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="vote">
                     <mat-header-cell *matHeaderCellDef>Vote</mat-header-cell>
-                    <mat-cell *matCellDef="let element">{{element.vote}}</mat-cell>
+                    <mat-cell *matCellDef="let element">
+                        <ng-container *ngIf="allVoted; else notAllVoted">{{element.vote}}</ng-container>
+                        <ng-template #notAllVoted>
+                            <ng-container *ngIf="element.vote; else noVote">
+                                <mat-icon>check</mat-icon>
+                            </ng-container>
+                            <ng-template #noVote>
+                                <mat-icon>close</mat-icon>
+                            </ng-template>
+                        </ng-template>
+                    </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="action">
+                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                    <mat-cell *matCellDef="let element">
+                        <button (click)="onDeleteMember(element.id)">Kick</button>
+                    </mat-cell>
                 </ng-container>
 
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

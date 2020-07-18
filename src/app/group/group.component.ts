@@ -15,7 +15,7 @@ import { config } from 'rxjs';
   styleUrls: ['./group.component.scss']
 })
 export class GroupComponent implements OnInit, OnDestroy {
-  displayedColumns: string[] = ['name', 'vote'];
+  displayedColumns: string[] = ['name', 'vote', 'action'];
   groupId: string;
   group: Group;
   memberId: string;
@@ -126,30 +126,18 @@ export class GroupComponent implements OnInit, OnDestroy {
     this.groupService.setVote(this.groupId, this.memberId, value);
   }
 
+  onDeleteMember(memberId: string): void {
+    if (memberId == this.memberId) {
+      this.navigateToHome();
+    }
+    this.groupService.deleteMember(this.groupId, memberId);
+  }
+
   onResetVote(): void {
     this.groupService.clearVotes(this.groupId);
   }
 
   get allVoted(): boolean {
     return this.members?.every(member => member.vote);
-  }
-
-  get dataSource() {
-    const allVoted = this.allVoted;
-    return this.members ?
-      this.members
-        .map(member => {
-          const name = member.name;
-          const vote = member.vote;
-          return {
-            name: name ? name : '?',
-            vote: allVoted ?
-              vote :
-              (vote ?
-                'voted' :
-                'waiting')
-          }
-        }) :
-      [];
   }
 }
