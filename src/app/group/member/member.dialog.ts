@@ -1,40 +1,38 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-member',
   templateUrl: './member.dialog.html',
-  styleUrls: ['./member.dialog.scss']
+  styleUrls: ['./member.dialog.scss'],
 })
 export class MemberDialog implements OnInit {
-  form: FormGroup;
+  form!: FormGroup;
   groupId: string;
 
   constructor(
     public dialogRef: MatDialogRef<MemberDialog>,
     @Inject(MAT_DIALOG_DATA) public data: MemberDialogData,
-    private formBuilder: FormBuilder,
   ) {
-    this.form = this.formBuilder.group({
-      name: data.name,
-    });
     this.groupId = data.groupId;
   }
 
   ngOnInit(): void {
+    this.form = new FormGroup({
+      name: new FormControl(this.data.name, [Validators.required]),
+    });
   }
 
   onSubmit(data: any) {
     const name: string = data.name;
     this.dialogRef.close(name);
   }
-
 }
 
 export class MemberDialogData {
   constructor(
     public groupId: string,
     public name: string = '',
-  ) { }
+  ) {}
 }

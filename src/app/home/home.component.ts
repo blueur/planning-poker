@@ -1,21 +1,20 @@
+import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
-
-import { Group } from '../models/group.model';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
+import { Router } from '@angular/router';
 import { GroupService } from '../group/group.service';
+import { Group } from '../models/group.model';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  createGroupForm: FormGroup;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
-  cards: string[] = [
+  readonly cards = signal([
     '1',
     '2',
     '3',
@@ -27,51 +26,57 @@ export class HomeComponent implements OnInit {
     '55',
     '89',
     '144',
-  ];
+  ]);
+  readonly formControl = new FormGroup({
+    name: new FormControl(''),
+    cards: new FormControl(this.cards),
+  });
+  announcer = inject(LiveAnnouncer);
 
   constructor(
     private router: Router,
-    private formBuilder: FormBuilder,
     private groupService: GroupService,
-  ) {
-    this.createGroupForm = this.formBuilder.group({
-      name: '',
+  ) {}
+
+  ngOnInit(): void {}
+
+  removeCard(keyword: string) {
+    this.cards.update((keywords) => {
+      const index = keywords.indexOf(keyword);
+      if (index < 0) {
+        return keywords;
+      }
+      keywords.splice(index, 1);
+      this.announcer.announce(`removed ${keyword} from cards`);
+      return [...keywords];
     });
   }
 
-  ngOnInit(): void {
-  }
-
-  onAddCard(event: MatChipInputEvent): void {
-    const input = event.input;
-    const value = event.value;
-    if (value && value.trim()) {
-      this.cards.push(value.trim());
-      this.cards = this.cards.sort((a, b) => {
-        try {
-          return Number(a) - Number(b);
-        } catch (e) {
-          return a > b ? -1 : 1
-        }
-      })
+  addCard(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+    if (value) {
+      this.cards.update((keywords) =>
+        [...keywords, value].sort((a, b) => {
+          try {
+            return Number(a) - Number(b);
+          } catch (e) {
+            return a > b ? -1 : 1;
+          }
+        }),
+      );
+      this.announcer.announce(`added ${value} to cards`);
     }
-    if (input) {
-      input.value = '';
-    }
+    event.chipInput!.clear();
   }
 
-  onRemoveCard(card: string): void {
-    this.cards = this.cards.filter(c => c !== card);
+  onCreate() {
+    const group: Group = {
+      name: this.formControl.get('name').value,
+      cards: this.cards(),
+      story: '',
+    };
+    this.groupService.create(group).subscribe((id) => {
+      this.router.navigate(['/groups', id]);
+    });
   }
-
-  onCreate(data: any) {
-    const group = new Group();
-    group.name = data.name;
-    group.cards = this.cards;
-    this.groupService.create(group)
-      .subscribe(id => {
-        this.router.navigate(['/groups', id]);
-      });
-  }
-
 }

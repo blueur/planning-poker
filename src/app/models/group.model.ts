@@ -1,12 +1,12 @@
-export class Group {
-    public id: string;
-    public name: string = "";
-    public cards: string[] = [];
-    public story: string = "";
+export interface Group {
+  id?: string;
+  name: string;
+  cards: string[];
+  story: string;
 }
 
-export class Member {
-    public id: string;
-    public name: string;
-    public vote: string;
+export interface Member {
+  id?: string;
+  name: string;
+  vote: string;
 }

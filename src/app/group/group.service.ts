@@ -1,100 +1,124 @@
-import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
-import { Subscription, Observable, from } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  Firestore,
+  getDoc,
+  getDocs,
+  onSnapshot,
+  updateDoc,
+} from '@angular/fire/firestore';
+import { from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Group, Member } from '../models/group.model';
-import { map, flatMap, filter } from 'rxjs/operators';
-
-import { isDefined } from '@angular/compiler/src/util';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GroupService {
-  private collection: AngularFirestoreCollection<unknown>;
   private readonly groups = 'groups';
   private readonly members = 'members';
-
-  constructor(
-    private firestore: AngularFirestore,
-  ) {
-    this.collection = this.firestore.collection(this.groups);
-  }
+  private firestore: Firestore = inject(Firestore);
 
   public create(group: Group): Observable<string> {
     console.info('new group', group);
-    return from(this.firestore.collection(this.groups)
-      .add(Object.assign({}, group)))
-      .pipe(map(document => document.id));
+    return from(
+      addDoc(collection(this.firestore, this.groups), Object.assign({}, group)),
+    ).pipe(map((document) => document.id));
   }
 
-  private getGroup(groupId: string): AngularFirestoreDocument<unknown> {
-    return this.collection.doc(groupId);
+  private getGroup(groupId: string) {
+    return doc(this.firestore, this.groups, groupId);
   }
 
-  private getMembers(groupId: string): AngularFirestoreCollection<unknown> {
-    return this.getGroup(groupId).collection(this.members);
+  private getMembers(groupId: string) {
+    return collection(this.firestore, this.groups, groupId, this.members);
   }
 
   private getMember(groupId: string, memberId: string) {
-    return this.getMembers(groupId).doc(memberId);
+    return doc(this.firestore, this.groups, groupId, this.members, memberId);
   }
 
   public exist(groupId: string): Observable<boolean> {
-    return this.getGroup(groupId).get()
-      .pipe(map(document => document.exists));
+    return from(getDoc(this.getGroup(groupId))).pipe(
+      map((document) => document.exists()),
+    );
   }
 
   public onGroupChange(groupId: string): Observable<Group> {
-    return this.getGroup(groupId).valueChanges()
-      .pipe(filter(data => isDefined(data)))
-      .pipe(map(data => Object.assign(new Group, data)));
+    return new Observable((observer) => {
+      return onSnapshot(
+        this.getGroup(groupId),
+        (snapshot) => observer.next(snapshot.data() as Group),
+        (error) => observer.error(error),
+      );
+    });
   }
 
   public onMembersChange(groupId: string): Observable<Member[]> {
-    return this.getMembers(groupId).valueChanges({ idField: 'id' })
-      .pipe(map(data => data
-        .map(doc => Object.assign(new Member, doc))
-      ));
+    return new Observable((observer) => {
+      return onSnapshot(
+        this.getMembers(groupId),
+        (snapshot) =>
+          observer.next(
+            snapshot.docs.map(
+              (doc) => ({ id: doc.id, ...doc.data() }) as Member,
+            ),
+          ),
+        (error) => observer.error(error),
+      );
+    });
   }
 
-  public delete(groupId: string): Promise<void> {
-    console.info('removing document', groupId);
-    return this.getGroup(groupId).delete();
+  public deleteGroup(groupId: string): Promise<void> {
+    console.info('removing group', groupId);
+    return deleteDoc(this.getGroup(groupId));
   }
 
   public createMember(groupId: string): Observable<string> {
-    return from(this.getMembers(groupId)
-      .add({}))
-      .pipe(map(document => document.id));
+    return from(addDoc(this.getMembers(groupId), {})).pipe(
+      map((document) => document.id),
+    );
   }
 
   public deleteMember(groupId: string, memberId: string): Promise<void> {
     console.info('removing member', memberId);
-    return this.getMember(groupId, memberId).delete();
+    return deleteDoc(this.getMember(groupId, memberId));
   }
 
   public setStory(groupId: string, story: string): Promise<void> {
-    return this.getGroup(groupId).update({
+    return updateDoc(this.getGroup(groupId), {
       story: story,
     });
   }
 
-  public setVote(groupId: string, memberId: string, vote: string): Promise<void> {
-    return this.getMember(groupId, memberId).update({
+  public setVote(
+    groupId: string,
+    memberId: string,
+    vote: string,
+  ): Promise<void> {
+    return updateDoc(this.getMember(groupId, memberId), {
       vote: vote,
     });
   }
 
-  public clearVotes(groupId: string): Subscription {
-    return this.getMembers(groupId).get()
-      .pipe(flatMap(collection => collection.docs.map(doc => doc.id)))
-      .subscribe(memberId => this.getMember(groupId, memberId).update({
+  public async clearVotes(groupId: string): Promise<void> {
+    const collection = await getDocs(this.getMembers(groupId));
+    collection.docs.forEach((doc) => {
+      updateDoc(doc.ref, {
         vote: null,
-      }));
+      });
+    });
   }
 
-  public setName(groupId: string, memberId: string, name: string): Promise<void> {
-    return this.getMember(groupId, memberId).update({
+  public setName(
+    groupId: string,
+    memberId: string,
+    name: string,
+  ): Promise<void> {
+    return updateDoc(this.getMember(groupId, memberId), {
       name: name,
     });
   }

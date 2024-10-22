@@ -1,33 +1,46 @@
 <div class="home">
-    <mat-card>
-        <form [formGroup]="createGroupForm" (ngSubmit)="onCreate(createGroupForm.value)">
-            <mat-card-title>New group</mat-card-title>
-            <mat-card-content>
-                <p>
-                    <mat-form-field>
-                        <mat-label>Name</mat-label>
-                        <input matInput required formControlName="name">
-                    </mat-form-field>
-                </p>
-                <p>
-                    <mat-form-field>
-                        <mat-chip-list #chipList>
-                            <mat-chip *ngFor="let card of cards" [selectable]="false" [removable]="true"
-                                (removed)="onRemoveCard(card)">
-                                {{card}}
-                                <mat-icon matChipRemove>cancel</mat-icon>
-                            </mat-chip>
-                            <input placeholder="Cards" [matChipInputFor]="chipList"
-                                [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="true"
-                                (matChipInputTokenEnd)="onAddCard($event)">
-                        </mat-chip-list>
-                    </mat-form-field>
-                </p>
-            </mat-card-content>
-            <mat-card-actions>
-                <button mat-raised-button color="primary" type="submit"
-                    [disabled]="createGroupForm.invalid">Create</button>
-            </mat-card-actions>
-        </form>
-    </mat-card>
+  <mat-card>
+    <form [formGroup]="formControl" #formDir="ngForm" (submit)="onCreate()">
+      <mat-card-header>New group</mat-card-header>
+      <mat-card-content>
+        <p>
+          <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input matInput required formControlName="name" />
+          </mat-form-field>
+        </p>
+        <p>
+          <mat-form-field>
+            <mat-label>Cards</mat-label>
+            <mat-chip-grid #chipGrid formControlName="cards">
+              @for (card of cards(); track card) {
+                <mat-chip-row (removed)="removeCard(card)">
+                  {{ card }}
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip-row>
+              }
+            </mat-chip-grid>
+            <input
+              placeholder="New card..."
+              [matChipInputFor]="chipGrid"
+              (matChipInputTokenEnd)="addCard($event)"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            />
+          </mat-form-field>
+        </p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="formControl.invalid"
+        >
+          Create
+        </button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
 </div>

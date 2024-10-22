@@ -1,75 +1,94 @@
 <div *ngIf="group; else loading">
-    <mat-toolbar>
-        <span>{{group.name}} - {{name}}</span>
-    </mat-toolbar>
-    <mat-expansion-panel [expanded]="true">
-        <mat-expansion-panel-header>
-            <mat-panel-title>Invite members</mat-panel-title>
-        </mat-expansion-panel-header>
-        <mat-form-field>
-            <mat-label>Link</mat-label>
-            <input matInput [value]="link" readonly>
-            <button mat-icon-button matSuffix [cdkCopyToClipboard]="link" (click)="onCopyLink()">
-                <mat-icon>content_copy</mat-icon>
-            </button>
-        </mat-form-field>
-        <qrcode [qrdata]="link"></qrcode>
-    </mat-expansion-panel>
-    <mat-card>
-        <mat-card-content>
-            <mat-form-field>
-                <mat-label>Story</mat-label>
-                <textarea matInput (change)="onStoryChange($event.target.value)">{{group.story}}</textarea>
-            </mat-form-field>
-        </mat-card-content>
-    </mat-card>
-    <mat-card>
-        <mat-button-toggle-group [disabled]="allVoted" [value]="vote" (change)="onVote($event.value)">
-            <mat-button-toggle *ngFor="let card of group.cards" [value]="card">{{card}}</mat-button-toggle>
-        </mat-button-toggle-group>
-    </mat-card>
-    <mat-card>
-        <mat-card-content>
-            <mat-table [dataSource]="members">
-                <ng-container matColumnDef="name">
-                    <mat-header-cell *matHeaderCellDef>Member</mat-header-cell>
-                    <mat-cell *matCellDef="let element">
-                        <ng-container *ngIf="element.name; else noName">{{element.name}}</ng-container>
-                        <ng-template #noName>
-                            <mat-icon>login</mat-icon>
-                        </ng-template>
-                    </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="vote">
-                    <mat-header-cell *matHeaderCellDef>Vote</mat-header-cell>
-                    <mat-cell *matCellDef="let element">
-                        <ng-container *ngIf="allVoted; else notAllVoted">{{element.vote}}</ng-container>
-                        <ng-template #notAllVoted>
-                            <ng-container *ngIf="element.vote; else noVote">
-                                <mat-icon>check</mat-icon>
-                            </ng-container>
-                            <ng-template #noVote>
-                                <mat-icon>close</mat-icon>
-                            </ng-template>
-                        </ng-template>
-                    </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="action">
-                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                    <mat-cell *matCellDef="let element">
-                        <button (click)="onDeleteMember(element.id)">Kick</button>
-                    </mat-cell>
-                </ng-container>
+  <mat-toolbar>
+    <span>{{ group.name }} - {{ name }}</span>
+  </mat-toolbar>
+  <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Invite members</mat-panel-title>
+    </mat-expansion-panel-header>
+    <mat-form-field>
+      <mat-label>Link</mat-label>
+      <input matInput [value]="link" readonly />
+      <button
+        mat-icon-button
+        matSuffix
+        [cdkCopyToClipboard]="link"
+        (click)="onCopyLink()"
+      >
+        <mat-icon>content_copy</mat-icon>
+      </button>
+    </mat-form-field>
+    <qrcode [qrdata]="link"></qrcode>
+  </mat-expansion-panel>
+  <mat-card>
+    <mat-card-content>
+      <mat-form-field>
+        <mat-label>Story</mat-label>
+        <textarea matInput (change)="onStoryChange($event.target.value)">{{
+          group.story
+        }}</textarea>
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
+  <mat-card>
+    <mat-button-toggle-group
+      [disabled]="allVoted"
+      [value]="vote"
+      (change)="onVote($event.value)"
+    >
+      <mat-button-toggle *ngFor="let card of group.cards" [value]="card">{{
+        card
+      }}</mat-button-toggle>
+    </mat-button-toggle-group>
+  </mat-card>
+  <mat-card>
+    <mat-card-content>
+      <mat-table [dataSource]="members">
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef>Member</mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <ng-container *ngIf="element.name; else noName">{{
+              element.name
+            }}</ng-container>
+            <ng-template #noName>
+              <mat-icon>login</mat-icon>
+            </ng-template>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="vote">
+          <mat-header-cell *matHeaderCellDef>Vote</mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <ng-container *ngIf="allVoted; else notAllVoted">{{
+              element.vote
+            }}</ng-container>
+            <ng-template #notAllVoted>
+              <ng-container *ngIf="element.vote; else noVote">
+                <mat-icon>check</mat-icon>
+              </ng-container>
+              <ng-template #noVote>
+                <mat-icon>close</mat-icon>
+              </ng-template>
+            </ng-template>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="action">
+          <mat-header-cell *matHeaderCellDef></mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <button (click)="onDeleteMember(element.id)">Kick</button>
+          </mat-cell>
+        </ng-container>
 
-                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-            </mat-table>
-        </mat-card-content>
-        <mat-card-actions>
-            <button mat-raised-button color="primary" (click)="onResetVote()">Reset votes</button>
-        </mat-card-actions>
-    </mat-card>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+      </mat-table>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="onResetVote()">
+        Reset votes
+      </button>
+    </mat-card-actions>
+  </mat-card>
 </div>
 <ng-template #loading>
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
 </ng-template>
