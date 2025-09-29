@@ -8,9 +8,10 @@ import { GroupService } from './group.service';
 import { MemberDialog, MemberDialogData } from './member/member.dialog';
 
 @Component({
-  selector: 'app-group',
-  templateUrl: './group.component.html',
-  styleUrls: ['./group.component.scss'],
+    selector: 'app-group',
+    templateUrl: './group.component.html',
+    styleUrls: ['./group.component.scss'],
+    standalone: false
 })
 export class GroupComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['name', 'vote', 'action'];

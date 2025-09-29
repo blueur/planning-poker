@@ -17,8 +17,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { QRCodeModule } from 'angularx-qrcode';
+import { QRCodeComponent } from 'angularx-qrcode';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -32,7 +31,6 @@ import { HomeComponent } from './home/home.component';
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    BrowserAnimationsModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,
@@ -47,7 +45,7 @@ import { HomeComponent } from './home/home.component';
     MatTableModule,
     MatToolbarModule,
     ClipboardModule,
-    QRCodeModule,
+    QRCodeComponent,
   ],
   providers: [
     provideFirebaseApp(() => initializeApp({ ...environment.firebase })),

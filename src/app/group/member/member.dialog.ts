@@ -3,9 +3,10 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-member',
-  templateUrl: './member.dialog.html',
-  styleUrls: ['./member.dialog.scss'],
+    selector: 'app-member',
+    templateUrl: './member.dialog.html',
+    styleUrls: ['./member.dialog.scss'],
+    standalone: false
 })
 export class MemberDialog implements OnInit {
   form!: FormGroup;
